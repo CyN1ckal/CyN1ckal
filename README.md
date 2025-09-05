@@ -1,10 +1,10 @@
 # About
-Hello! My name is Nick and I go by the handle CyNickal online. I am from the United States and am currently going to school in Canada. At school I study buisness administration and financial management, but in my free time I enjoy studying reverse engineering. I mostly focus on video game cheat development, as that is what interests me, but I am trying to get more into the software security side. I have been slowly learning programming over many years, but only really started allocating significant time towards it over the past year.
+Hello! My name is Nick and I go by the handle CyNickal online. I am from the United States and am currently going to school in Canada. At school I study buisness administration and financial management, but in my free time I enjoy studying reverse engineering and programming. I mostly focus on video game cheat development, as that is what interests me, but I am trying to get more into the financial software area. 
 
-# What I am trying to learn (Currently)
-- Complex Direct X Rendering
-- Malware Reverse Engineering
-- Anti Cheat Detection Methods
+# Where I am currently focused on:
+- Low-latency system design
+- Financial systems design
+- Dataset analysis
 
   # Contact
   Discord: cynickal
