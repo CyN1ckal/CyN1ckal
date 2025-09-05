@@ -8,6 +8,7 @@ Hello! My name is Nick and I go by the handle CyNickal online. I am from the Uni
 
   # Contact
   Discord: cynickal
+  Email: cynickal@cynickal.com
 
   # Tech Stack
 <div >
