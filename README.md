@@ -21,8 +21,3 @@ Hello! My name is Nick and I go by the handle CyNickal online. I am from the Uni
 	<code><img width="50" src="https://user-images.githubusercontent.com/25181517/183898674-75a4a1b1-f960-4ea9-abcb-637170a00a75.png" alt="CSS" title="CSS"/></code>
 	<code><img width="50" src="https://user-images.githubusercontent.com/25181517/183897015-94a058a6-b86e-4e42-a37f-bf92061753e5.png" alt="React" title="React"/></code>
 </div>
-
-# Github Stats
-![](https://github-readme-stats.vercel.app/api?username=CyN1ckal&theme=radical&hide_border=false&include_all_commits=false&count_private=false)<br/>
-![](https://github-readme-streak-stats.herokuapp.com/?user=CyN1ckal&theme=radical&hide_border=false)<br/>
-![](https://github-readme-stats.vercel.app/api/top-langs/?username=CyN1ckal&theme=radical&hide_border=false&include_all_commits=false&count_private=false&layout=compact)
