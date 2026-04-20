@@ -1,5 +1,5 @@
 # About
-Hello! My name is Nick and I go by the handle CyNickal online. I am from the United States and am currently going to school in Canada. At school I study buisness administration and financial management, but in my free time I enjoy studying reverse engineering and programming. I mostly focus on video game cheat development, as that is what interests me, but I am trying to get more into the financial software area. 
+Hello! My name is Nick and I go by the handle CyNickal online. 
 
 # Where I am currently focused on:
 - Low-latency system design
