@@ -62,10 +62,6 @@ CONTENT = {
         ("C", "Systems", False),
         ("Python", "Analysis", False),
         ("MySQL", "Database", False),
-        ("HTTP", "Protocol", False),
-        ("PHP", "Backend", False),
-        ("React", "Frontend", False),
-        ("CSS", "Frontend", False),
     ],
     "contact_lede": ("Discord is the fastest way to reach me. For anything "
                      "business-related, email works too — or have a look "

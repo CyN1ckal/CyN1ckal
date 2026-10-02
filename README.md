@@ -14,7 +14,7 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/dark/stack.svg">
-  <img width="100%" src="assets/light/stack.svg" alt="Tech stack: C++, C, Python, MySQL, HTTP, PHP, React, CSS.">
+  <img width="100%" src="assets/light/stack.svg" alt="Tech stack: C++, C, Python, MySQL.">
 </picture>
 
 <picture>
