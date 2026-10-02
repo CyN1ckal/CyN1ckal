@@ -1,5 +1,5 @@
 """
-Builds the profile README cards as SVGs in the Stratum theme used by
+Builds the profile README card and link buttons as SVGs in the Stratum theme used by
 cynickalsoftware.com (IBM Plex, slate-blue palette, hairline readout panels).
 
     python tools/build.py
@@ -9,7 +9,7 @@ with <picture> + prefers-color-scheme. Edit CONTENT below and re-run.
 
 Fonts are pulled from Google Fonts: static TTFs to measure text for layout,
 and a woff2 subset of exactly the characters used, embedded in each SVG so
-the cards render in IBM Plex wherever GitHub shows them. Needs fontTools.
+they render in IBM Plex wherever GitHub shows them. Needs fontTools.
 """
 
 import base64
@@ -26,46 +26,21 @@ CACHE = ROOT / "tools" / ".cache"
 LOGO = ROOT / "tools" / "logo-96.png"
 
 W = 840          # card width; GitHub's profile README column is ~830px
-PAD = 24         # inner padding of section frames
 
 # ------------------------------------------------------------------ content
 
 CONTENT = {
-    "badge": "Low-latency · Systems · Data",
-    "headline": ["Hi, I’m Nick.", "Low-latency systems,", "markets & data."],
-    "sub": "aka CyNickal · C / C++ · cynickalsoftware.com",
-    "lede": ("I go by the handle CyNickal online. "
-             "I spend most of my time on low-latency system design, financial "
-             "systems and dataset analysis, and I build hardware DMA tooling "
-             "under CyNickal Software."),
+    "headline": "Hi, I’m Nick.",
+    "tag": "Low-latency · Systems · Data",
+    "lede": ("I go by the handle CyNickal online. I work on low-latency "
+             "system design, financial systems and dataset analysis, and "
+             "build hardware DMA tooling under CyNickal Software."),
     "readout": [
-        ("Handle", "CyNickal", False),
-        ("GitHub", "CyN1ckal", False),
-        ("Languages", "C · C++ · Python", False),
+        ("Focus", "Latency · Finance · Data", False),
+        ("Stack", "C++ · C · Python · MySQL", False),
         ("Discord", "cynickal", False),
         ("Email", "cynickal@cynickal.com", True),
-        ("Studio", "CyNickal Software", False),
     ],
-    "focus": [
-        ("Latency", "Low-latency system design",
-         "Hot paths, memory access and timing — measured empirically "
-         "before anything gets optimised.", "dma_timing"),
-        ("Finance", "Financial systems design",
-         "Research tooling, trade ledgers and backtesting engines built "
-         "for speed and correctness.", "CyNickal-Software-Terminal"),
-        ("Data", "Dataset analysis",
-         "Pulling structure out of large datasets — cleaning, modelling "
-         "and surfacing what matters.", "Python · MySQL"),
-    ],
-    "stack": [
-        ("C++", "Primary", True),
-        ("C", "Systems", False),
-        ("Python", "Analysis", False),
-        ("MySQL", "Database", False),
-    ],
-    "contact_lede": ("Discord is the fastest way to reach me. For anything "
-                     "business-related, email works too — or have a look "
-                     "around CyNickal Software."),
 }
 
 # ------------------------------------------------------------------ palette
@@ -100,7 +75,6 @@ def mix(a, b, t):
 
 UA_WOFF2 = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/130.0 Safari/537.36")
-FAMILY = {"sans": "IBM Plex Sans", "mono": "IBM Plex Mono"}
 STACK = {
     "sans": "'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif",
     "mono": "'IBM Plex Mono',ui-monospace,'Cascadia Mono',Consolas,monospace",
@@ -187,7 +161,7 @@ class Svg:
         self.add(f"<text {attrs}>{html.escape(s, quote=False)}</text>")
 
     def frame(self):
-        """The bg0 panel every section sits on, so cards read on light GitHub too."""
+        """The bg0 panel the card sits on, so it reads on light GitHub too."""
         t = self.t
         self.add(f'<rect x="0.5" y="0.5" width="{self.w - 1}" height="{self.h - 1}" rx="8" '
                  f'fill="{t["bg0"]}" stroke="{t["line"]}"/>')
@@ -197,10 +171,6 @@ class Svg:
                  f'<animate attributeName="opacity" values=".22;.05;.22" dur="2.4s" repeatCount="indefinite"/></circle>'
                  f'<circle cx="{cx}" cy="{cy}" r="3" fill="{color}">'
                  f'<animate attributeName="opacity" values="1;.35;1" dur="2.4s" repeatCount="indefinite"/></circle>')
-
-    def section_head(self, num, title):
-        self.text(PAD, PAD + 12, f"{num} / {title[0]}", "mono", 500, 10.5, "txf", 1.68, upper=True)
-        self.text(PAD, PAD + 42, title[1], "sans", 600, 20, "tx", -0.3)
 
     def render(self, fontcss):
         css = "".join(fontcss[f] for f in sorted(self.faces) if f in fontcss)
@@ -214,13 +184,8 @@ class Svg:
 
 # ------------------------------------------------------------------ cards
 
-def hero(t):
-    c = CONTENT
-    lede = wrap(c["lede"], 420, "sans", 400, 14.5)
-    rows = c["readout"]
-    rh = 36 + 6 + 33 * len(rows) + 6 + 50
-    H = round(max(324 + 24.5 * (len(lede) - 1), 84 + rh) + 36)
-    s = Svg(t, W, H)
+def chrome(s, t, H):
+    """Frame, top glow and the site's nav lockup."""
     s.defs.append(
         f'<clipPath id="clip"><rect x="0.5" y="0.5" width="{W - 1}" height="{H - 1}" rx="8"/></clipPath>'
         f'<radialGradient id="glow" cx="{W / 2}" cy="-46" r="{W * 0.35}" gradientUnits="userSpaceOnUse" '
@@ -258,113 +223,40 @@ def hero(t):
           f'fill-opacity=".16" stroke="{t["acc"]}"/>')
     s.text(cx + cw / 2, 30.5, cta, "sans", 500, 12.5, "acc", anchor="middle")
 
-    # left column
-    x0, y = 36, 84
-    bw = 28 + M.width(c["badge"].upper(), "mono", 500, 10.5, 1.47) + 14
-    s.add(f'<rect x="{x0 + .5}" y="{y + .5}" width="{bw:.1f}" height="26" rx="13" '
-          f'fill="{t["bg2"]}" fill-opacity=".8" stroke="{t["line2"]}"/>')
-    s.dot(x0 + 16, y + 13.5, t["acc"])
-    s.text(x0 + 28, y + 17.5, c["badge"], "mono", 500, 10.5, "txd", 1.47, upper=True)
 
-    y = 160
-    for line in c["headline"]:
-        s.text(x0, y, line, "sans", 600, 36, "tx", -0.9)
-        y += 40
-    y += 4
-    s.text(x0, y, c["sub"], "mono", 400, 11.5, "txf", 0.69)
-    y += 34
+def profile(t):
+    """Everything in one card: intro on the left, readout of focus / stack / contact on the right."""
+    c = CONTENT
+    lede = wrap(c["lede"], 410, "sans", 400, 14)
+    rows = c["readout"]
+    rx, ry, rw = 480, 72, W - 28 - 480
+    rh = 32 + 4 + 29 * len(rows) + 4
+    H = round(max(150 + 22 * (len(lede) - 1), ry + rh) + 26)
+    s = Svg(t, W, H)
+    chrome(s, t, H)
+
+    x0 = 28
+    s.text(x0, 106, c["headline"], "sans", 600, 30, "tx", -0.75)
+    s.text(x0 + M.width(c["headline"], "sans", 600, 30, -0.75) + 12, 106,
+           c["tag"], "mono", 500, 10.5, "acc", 1.47, upper=True)
+    y = 150
     for line in lede:
-        s.text(x0, y, line, "sans", 400, 14.5, "txd")
-        y += 24.5
+        s.text(x0, y, line, "sans", 400, 14, "txd")
+        y += 22
 
-    # right column: readout card
-    rx, ry, rw = 500, 84, W - 36 - 500
     s.add(f'<g filter="url(#shadow)"><rect x="{rx}" y="{ry}" width="{rw}" height="{rh}" rx="8" fill="{t["bg2"]}"/></g>')
     head = mix(t["bg0"], t["bg2"], 0.2)
-    s.add(f'<path d="M{rx} {ry + 36}V{ry + 8}a8 8 0 0 1 8 -8H{rx + rw - 8}a8 8 0 0 1 8 8V{ry + 36}Z" fill="{head}"/>'
-          f'<line x1="{rx}" y1="{ry + 36.5}" x2="{rx + rw}" y2="{ry + 36.5}" stroke="{t["line"]}"/>')
-    s.text(rx + 14, ry + 22, "Profile readout", "mono", 600, 10, "txf", 1.4, upper=True)
-    s.text(rx + rw - 14, ry + 22, "Active", "mono", 600, 10, "ok", 1.4, anchor="end", upper=True)
-    s.dot(rx + rw - 14 - M.width("ACTIVE", "mono", 600, 10, 1.4) - 9, ry + 18.5, t["ok"])
-
-    yy = ry + 42
+    s.add(f'<path d="M{rx} {ry + 32}V{ry + 8}a8 8 0 0 1 8 -8H{rx + rw - 8}a8 8 0 0 1 8 8V{ry + 32}Z" fill="{head}"/>'
+          f'<line x1="{rx}" y1="{ry + 32.5}" x2="{rx + rw}" y2="{ry + 32.5}" stroke="{t["line"]}"/>')
+    s.text(rx + 14, ry + 20, "Profile readout", "mono", 600, 10, "txf", 1.4, upper=True)
+    s.text(rx + rw - 14, ry + 20, "Active", "mono", 600, 10, "ok", 1.4, anchor="end", upper=True)
+    s.dot(rx + rw - 14 - M.width("ACTIVE", "mono", 600, 10, 1.4) - 9, ry + 16.5, t["ok"])
+    yy = ry + 36
     for label, value, acc in rows:
-        s.text(rx + 14, yy + 21, label, "sans", 400, 12.5, "txd")
-        s.text(rx + rw - 14, yy + 21, value, "mono", 400, 12.5, "acc" if acc else "tx", anchor="end")
-        yy += 33
-
-    fy = yy + 6
-    s.add(f'<line x1="{rx}" y1="{fy + .5}" x2="{rx + rw}" y2="{fy + .5}" stroke="{t["line"]}"/>')
-    s.text(rx + 14, fy + 22, "Focus areas", "sans", 400, 11.5, "txd")
-    s.text(rx + rw - 14, fy + 22, "3 / 3", "mono", 400, 11.5, "tx", anchor="end")
-    s.add(f'<rect x="{rx + 14}" y="{fy + 31}" width="{rw - 28}" height="4" rx="2" fill="{t["bg0"]}"/>'
-          f'<rect x="{rx + 14}" y="{fy + 31}" width="{rw - 28}" height="4" rx="2" fill="{t["acc"]}"/>')
+        s.text(rx + 14, yy + 19, label, "sans", 400, 12.5, "txd")
+        s.text(rx + rw - 14, yy + 19, value, "mono", 400, 12.5, "acc" if acc else "tx", anchor="end")
+        yy += 29
     s.add(f'<rect x="{rx + .5}" y="{ry + .5}" width="{rw - 1}" height="{rh - 1}" rx="8" stroke="{t["line2"]}"/>')
-    return s
-
-
-def focus(t):
-    cards = CONTENT["focus"]
-    gap = 12
-    cw = (W - 2 * PAD - gap * (len(cards) - 1)) / len(cards)
-    bodies = [wrap(b, cw - 36, "sans", 400, 13) for _, _, b, _ in cards]
-    ch = 90 + 20 * max(map(len, bodies)) + 48
-    top = PAD + 66
-    s = Svg(t, W, top + ch + PAD)
-    s.frame()
-    s.section_head("01", ("Focus", "Where I’m currently focused"))
-    for i, ((kicker, title, _, ref), body) in enumerate(zip(cards, bodies)):
-        x = PAD + i * (cw + gap)
-        s.add(f'<rect x="{x + .5:.1f}" y="{top + .5}" width="{cw - 1:.1f}" height="{ch - 1}" rx="8" '
-              f'fill="{t["bg2"]}" stroke="{t["line"]}"/>')
-        s.text(x + 18, top + 30, f"0{i + 1} · {kicker}", "mono", 500, 10, "acc", 1.4, upper=True)
-        s.text(x + 18, top + 56, title, "sans", 600, 16, "tx", -0.2)
-        y = top + 84
-        for line in body:
-            s.text(x + 18, y, line, "sans", 400, 13, "txd")
-            y += 20
-        s.add(f'<line x1="{x + 1:.1f}" y1="{top + ch - 38.5}" x2="{x + cw - 1:.1f}" y2="{top + ch - 38.5}" stroke="{t["line"]}"/>')
-        s.text(x + 18, top + ch - 15, "Ref", "mono", 500, 10, "txf", 1.4, upper=True)
-        s.text(x + 52, top + ch - 15, ref, "mono", 400, 11, "tx")
-    return s
-
-
-def stack(t):
-    items = CONTENT["stack"]
-    cols = 4
-    rows = -(-len(items) // cols)
-    cell_h = 76
-    top = PAD + 66
-    gw = W - 2 * PAD
-    s = Svg(t, W, top + rows * cell_h + (rows + 1) + PAD)
-    s.frame()
-    s.section_head("02", ("Stack", "Tech stack"))
-    gh = rows * cell_h + rows + 1
-    s.defs.append(f'<clipPath id="grid"><rect x="{PAD}" y="{top}" width="{gw}" height="{gh}" rx="8"/></clipPath>')
-    s.add(f'<g clip-path="url(#grid)"><rect x="{PAD}" y="{top}" width="{gw}" height="{gh}" fill="{t["line"]}"/>')
-    cw = (gw - (cols + 1)) / cols
-    for i, (name, label, primary) in enumerate(items):
-        r, c = divmod(i, cols)
-        x = PAD + 1 + c * (cw + 1)
-        y = top + 1 + r * (cell_h + 1)
-        s.add(f'<rect x="{x:.2f}" y="{y}" width="{cw:.2f}" height="{cell_h}" fill="{t["bg2"]}"/>')
-        s.text(x + 16, y + 36, name, "mono", 500, 22, "tx", -0.44)
-        s.text(x + 16, y + 57, label, "mono", 400, 10, "acc" if primary else "txf", 1.4, upper=True)
-        if primary:
-            s.add(f'<circle cx="{x + cw - 18:.2f}" cy="{y + 18}" r="3" fill="{t["acc"]}"/>')
-    s.add("</g>")
-    return s
-
-
-def contact(t):
-    lines = wrap(CONTENT["contact_lede"], W - 2 * PAD - 40, "sans", 400, 14.5)
-    s = Svg(t, W, round(PAD + 66 + 24.5 * len(lines) - 6 + PAD))
-    s.frame()
-    s.section_head("03", ("Contact", "Get in touch"))
-    y = PAD + 76
-    for line in lines:
-        s.text(PAD, y, line, "sans", 400, 14.5, "txd")
-        y += 24.5
     return s
 
 
@@ -423,7 +315,7 @@ def font_css():
 def main():
     cards = {}
     for name, t in THEMES.items():
-        cards[name] = {"hero": hero(t), "focus": focus(t), "stack": stack(t), "contact": contact(t)}
+        cards[name] = {"profile": profile(t)}
         for key, args in BUTTONS.items():
             cards[name][key] = button(t, *args)
     fonts = font_css()
